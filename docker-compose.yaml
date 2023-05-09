@@ -1,6 +1,46 @@
 version: '3.8'
 
 services:
+
+  front:
+    image: sermalenk/skypro-front:lesson-34
+    restart: always
+    ports:
+      - 81:80
+    depends_on:
+      api:
+        condition: service_started
+
+  api:
+    build:
+      context: ../..
+      dockerfile: ../Dockerfile
+    env_file: .env
+    restart: always
+    environment:
+      DATABASE_HOST: db
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    volumes:
+      - ./core:/app/core
+      - ./TaskPlanner:/app/TaskPlanner
+
+  migrations:
+    build:
+      context: ../..
+      dockerfile: ../Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    command: >
+      sh -c "python ./manage.py migrate"
+
   db:
     image: postgres:15.1-alpine
     restart: always
