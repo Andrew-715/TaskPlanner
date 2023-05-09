@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-WORKDIR /opt/taskplanner
+WORKDIR /app
 
 ENV PYTHONUNBUFFERED 1 \
     PYTHONDONTWRITEBYTECODE 1
