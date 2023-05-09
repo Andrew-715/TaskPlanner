@@ -1,38 +1,45 @@
-name: Deploy
+name: Build and deploy
 
 on:
   push:
-    branches:
-      - main
+    branches-ignore:
+      - master
+      - develop
+      - HW34
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: docker/setup-buildx-action@v2
-      - uses: docker/login-action@v2
+      - name: clone code
+        uses: actions/checkout@v3
+      - name: docker build
+        uses: docker build -t Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
+      - name: docker login
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/build-push-action@v4
-        with:
-          push: true
-          file: Dockerfile
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/TaskPlanner:latest
-
+      - name: docker push
+        run: docker push Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: clone code
+        uses: actions/checkout@v3
+      - name: render configs
+        run: |
+          mkdir deploy_ci
+          cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
+          cat .env | envsubst > deploy_ci/.env
       - name: Copy on server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          source: "deploy/*"
+          source: "deploy_ci/docker-compose.yaml,deploy_ci/.env"
           target: "TaskPlanner"
           strip_components: 1
       - name: Run compose
@@ -43,14 +50,5 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             cd TaskPlanner
-            docker-compose pull
+            docker-compose down
             docker-compose up -d
-      - name: Cleanup
-        if: always()
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            docker system prune -a -f

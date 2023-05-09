@@ -12,8 +12,7 @@ services:
         condition: service_started
 
   api:
-    build:
-      context: .
+    image: Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     env_file: .env
     restart: always
     environment:
@@ -30,8 +29,7 @@ services:
       - ./TaskPlanner:/app/TaskPlanner
 
   migrations:
-    build:
-      context: .
+    image: Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     depends_on:
       db:
         condition: service_healthy
