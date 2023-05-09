@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+
+  front:
+    image: sermalenk/skypro-front:lesson-34
+    restart: always
+    ports:
+      - 81:80
+    depends_on:
+      api:
+        condition: service_started
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - django_static:/usr/share/nginx/html/static
+
+  api:
+    image: icealpine/task_planner:latest
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+#      migrations:
+#        condition: service_completed_successfully
+    volumes:
+      - django_static:/app/static
+
+#  migrations:
+#    build:
+#      context: .
+#    image: icealpine/task_planner
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#    command:
+#      - python manage.py migrate
+
+  db:
+    image: postgres:15.1
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - TaskPlanner_deploy_data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}
+      timeout: 3s
+      interval: 4s
+      retries: 10
+
+volumes:
+  TaskPlanner_deploy_data:
+  django_static:
