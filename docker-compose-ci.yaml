@@ -10,40 +10,46 @@ services:
     depends_on:
       api:
         condition: service_started
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - django_static:/usr/share/nginx/html/static
 
   api:
-    image: icealpine/task_planner:latest
+    build:
+      context: .
     env_file: .env
+    restart: always
+    environment:
+      DATABASE_HOST: db
+    ports:
+      - 8000:8000
     depends_on:
       db:
         condition: service_healthy
-#      migrations:
-#        condition: service_completed_successfully
+      migrations:
+        condition: service_completed_successfully
     volumes:
-      - django_static:/app/static
+      - ./core:/app/core
+      - ./TaskPlanner:/app/TaskPlanner
 
-#  migrations:
-#    build:
-#      context: .
-#    image: icealpine/task_planner
-#    depends_on:
-#      db:
-#        condition: service_healthy
-#    command:
-#      - python manage.py migrate
+  migrations:
+    build:
+      context: .
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    command: >
+      sh -c "python ./manage.py migrate"
 
   db:
-    image: postgres:15.1
+    image: postgres:15.1-alpine
     restart: always
     environment:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     volumes:
-      - TaskPlanner_deploy_data:/var/lib/postgresql/data
+      - TaskPlanner_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
     healthcheck:
       test: pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}
       timeout: 3s
@@ -51,5 +57,4 @@ services:
       retries: 10
 
 volumes:
-  TaskPlanner_deploy_data:
-  django_static:
+  TaskPlanner_data:
