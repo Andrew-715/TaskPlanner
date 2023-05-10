@@ -12,7 +12,7 @@ services:
         condition: service_started
 
   api:
-    image: Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    image: Andrew-715/taskplanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     env_file: .env
     restart: always
     environment:
