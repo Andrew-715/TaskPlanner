@@ -14,7 +14,7 @@ jobs:
       - name: clone code
         uses: actions/checkout@v3
       - name: docker build
-        uses: docker build -t Andrew-715/taskplanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
+        run: docker build -t Andrew-715/taskplanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
       - name: docker login
         uses: docker/login-action@v2
         with:
