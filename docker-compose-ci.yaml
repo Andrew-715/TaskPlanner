@@ -29,7 +29,7 @@ services:
       - ./TaskPlanner:/app/TaskPlanner
 
   migrations:
-    image: Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    image: Andrew-715/taskplanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     depends_on:
       db:
         condition: service_healthy
