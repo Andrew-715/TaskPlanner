@@ -45,15 +45,15 @@ services:
     image: postgres:15.1-alpine
     restart: always
     environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: $DATABASE_USER
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD
+      POSTGRES_DB: $DATABASE_NAME
     volumes:
       - TaskPlanner_data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
     healthcheck:
-      test: pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}
+      test: pg_isready -U $DATABASE_USER -d $DATABASE_NAME
       timeout: 3s
       interval: 4s
       retries: 10
