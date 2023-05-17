@@ -12,11 +12,9 @@ services:
         condition: service_started
 
   api:
-    image: Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    image: icealpine/taskplanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     env_file: .env
     restart: always
-    environment:
-      DATABASE_HOST: db
     ports:
       - 8000:8000
     depends_on:
@@ -24,12 +22,9 @@ services:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
-    volumes:
-      - ./core:/app/core
-      - ./TaskPlanner:/app/TaskPlanner
 
   migrations:
-    image: Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    image: icealpine/taskplanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     depends_on:
       db:
         condition: service_healthy
@@ -41,15 +36,13 @@ services:
     image: postgres:15.1-alpine
     restart: always
     environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: $DATABASE_USER
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD
+      POSTGRES_DB: $DATABASE_NAME
     volumes:
       - TaskPlanner_data:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
     healthcheck:
-      test: pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}
+      test: pg_isready -U $DATABASE_USER -d $DATABASE_NAME
       timeout: 3s
       interval: 4s
       retries: 10

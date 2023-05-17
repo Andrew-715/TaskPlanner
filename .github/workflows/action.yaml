@@ -14,14 +14,14 @@ jobs:
       - name: clone code
         uses: actions/checkout@v3
       - name: docker build
-        uses: docker build -t Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
+        run: docker build -t icealpine/taskplanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
       - name: docker login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: docker push
-        run: docker push Andrew-715/TaskPlanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+        run: docker push icealpine/taskplanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -29,10 +29,15 @@ jobs:
       - name: clone code
         uses: actions/checkout@v3
       - name: render configs
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         run: |
           mkdir deploy_ci
           cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml
-          cat .env | envsubst > deploy_ci/.env
+          cat .env_ci | envsubst > deploy_ci/.env
       - name: Copy on server
         uses: appleboy/scp-action@master
         with:
@@ -52,3 +57,12 @@ jobs:
             cd TaskPlanner
             docker-compose down
             docker-compose up -d
+      - name: Clear after deploy
+        if: always()
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            docker system prune -a -f
