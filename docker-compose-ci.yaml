@@ -13,7 +13,7 @@ services:
 
   api:
     image: icealpine/taskplanner:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-    env_file: .env_ci
+    env_file: .env
     restart: always
     ports:
       - 8000:8000
@@ -28,7 +28,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file: .env_ci
+    env_file: .env
     command: >
       sh -c "python ./manage.py migrate"
 
