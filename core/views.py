@@ -17,7 +17,6 @@ USER_MODEL = get_user_model()
 
 
 class RegistrationView(CreateAPIView):
-    model = USER_MODEL
     permission_classes = [AllowAny]
     serializer_class = RegistrationSerializer
 
@@ -50,7 +49,6 @@ class LoginView(CreateAPIView):
 
 class ProfileView(RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
-    queryset = USER_MODEL.objects.all()
     permission_classes = [IsAuthenticated]
 
     def get_object(self):

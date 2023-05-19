@@ -52,6 +52,7 @@ class RegistrationSerializer(ModelSerializer):
     def validate(self, attrs: dict):
         if attrs['password'] != attrs['password_repeat']:
             raise ValidationError('Password and password_repeat do not match.')
+        return attrs
 
     '''
     Кеширование пароля при регистрации. 
