@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   front:
-    image: sermalenk/skypro-front:lesson-35
+    image: sermalenk/skypro-front:lesson-36
     restart: always
     ports:
       - 81:80
@@ -28,6 +28,7 @@ services:
     volumes:
       - ./core:/app/core
       - ./TaskPlanner:/app/TaskPlanner
+      - ./goals:/app/goals
 
   migrations:
     build:
