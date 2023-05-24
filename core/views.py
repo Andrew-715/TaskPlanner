@@ -10,20 +10,10 @@ from core.serializers import RegistrationSerializer, LoginSerializer, \
 
 USER_MODEL = get_user_model()
 
-'''
-Вью с регистрацией, в которой указываем права доступа к форме
-регистрации и указываем необходимый сериалайзер.
-'''
-
 
 class RegistrationView(CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = RegistrationSerializer
-
-
-'''
-Вью для авторизации пользователя.
-'''
 
 
 class LoginView(CreateAPIView):
@@ -42,11 +32,6 @@ class LoginView(CreateAPIView):
         return Response(serializer.data)
 
 
-'''
-Вью для получения, обновления и удаления данных пользователя.
-'''
-
-
 class ProfileView(RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -57,11 +42,6 @@ class ProfileView(RetrieveUpdateDestroyAPIView):
     def delete(self, request, *args, **kwargs):
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-'''
-Вью для обновления пароля.
-'''
 
 
 class UpdatePasswordView(UpdateAPIView):
