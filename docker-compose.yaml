@@ -37,8 +37,6 @@ services:
       db:
         condition: service_healthy
     env_file: .env
-    ports:
-      - 8111:8000
     command: >
       sh -c "python ./manage.py migrate"
 
