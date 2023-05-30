@@ -5,12 +5,12 @@ from rest_framework.generics import CreateAPIView, ListAPIView, \
 from rest_framework.permissions import IsAuthenticated
 
 from goals.models import GoalCategory, Goal
-from goals.permissions import GoalCategoryPermission
-from goals.serializers import GoalCreateSerializer, GoalCategorySerializer
+from goals.permissions import GoalCategoryPermission, BoardPermissions
+from goals.serializers.goal_category import GoalCreateSerializer, GoalCategorySerializer
 
 
 class GoalCategoryCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BoardPermissions]
     serializer_class = GoalCreateSerializer
 
 
@@ -21,22 +21,19 @@ class GoalCategoryListView(ListAPIView):
         OrderingFilter,
         SearchFilter,
     ]
-    ordering_fields = ['title', 'created']
+    ordering_fields = ['title', 'created', 'board']
     ordering = ['title']
     search_fields = ['title']
 
     def get_queryset(self):
-        return GoalCategory.objects.select_related('user').filter(
-            user=self.request.user).exclude(is_deleted=True)
+        return GoalCategory.objects.filter(
+            board__participants__user=self.request.user).exclude(is_deleted=True)
 
 
 class GoalCategoryView(RetrieveUpdateDestroyAPIView):
     serializer_class = GoalCategorySerializer
     permission_classes = [GoalCategoryPermission]
-
-    def get_queryset(self):
-        return GoalCategory.objects.select_related(
-            'user').exclude(is_deleted=True)
+    queryset = GoalCategory.objects.exclude(is_deleted=True)
 
     '''
     Переопределяем метод 'perform_destroy', чтобы
