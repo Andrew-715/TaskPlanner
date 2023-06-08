@@ -40,6 +40,19 @@ services:
     command: >
       sh -c "python ./manage.py migrate"
 
+  bot:
+    build:
+      context: .
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    volumes:
+      - ./bot:/app/bot
+    command:
+      "python ./manage.py runbot"
+
   db:
     image: postgres:15.1-alpine
     restart: always

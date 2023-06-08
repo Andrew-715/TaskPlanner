@@ -18,7 +18,14 @@ class TgClient:
             f'allowed_updates=["update_id","message"]'
         ))
         print(response.json())
-        return UpdatesSchema.load(response.json())
+
+        offset = 0
+        tg_client = TgClient("token")
+        while True:
+            res = tg_client.get_updates(offset=offset)
+            for item in res.result:
+                offset = item.update_id + 1
+                print(item.message)
 
     def send_message(self, chat_id: int, text: str) -> SendMessageResponse:
         raise NotImplementedError
