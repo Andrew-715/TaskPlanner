@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import QuerySet
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import CreateAPIView, ListAPIView, \
     RetrieveUpdateDestroyAPIView
@@ -25,7 +26,7 @@ class GoalCategoryListView(ListAPIView):
     ordering = ['title']
     search_fields = ['title']
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[GoalCategory]:
         return GoalCategory.objects.filter(
             board__participants__user=self.request.user).exclude(is_deleted=True)
 

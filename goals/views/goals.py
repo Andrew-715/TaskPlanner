@@ -1,3 +1,4 @@
+from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import CreateAPIView, ListAPIView, \
@@ -28,7 +29,7 @@ class GoalListView(ListAPIView):
     ordering = ['title']
     search_fields = ['title', 'description']
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Goal]:
         return Goal.objects.filter(
             category__board__participants__user=self.request.user
         ).exclude(status=Goal.Status.archived)
