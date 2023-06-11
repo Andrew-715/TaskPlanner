@@ -43,15 +43,15 @@ services:
   bot:
     build:
       context: .
+    environment:
+      DATABASE_HOST: db
     depends_on:
       migrations:
         condition: service_completed_successfully
       db:
         condition: service_healthy
-    volumes:
-      - ./bot:/app/bot
     command:
-      "python ./manage.py runbot"
+      python ./manage.py runbot
 
   db:
     image: postgres:15.1-alpine

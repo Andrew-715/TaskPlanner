@@ -1,37 +1,40 @@
-import requests
+from typing import Any
 
-from bot.tg.dc import GetUpdatesResponse, \
-    SendMessageResponse, FromMessageResponse, \
-    ChatResponse, UpdatesSchema
+import requests
+from marshmallow import ValidationError
+
+from TaskPlanner import settings
+from bot.tg.dc import GetUpdatesResponse, SendMessageResponse, GetUpdatesSchema, SendMessageSchema
 
 
 class TgClient:
-    def __init__(self, token):
-        self.token = token
+    def __init__(self, token: str | None = None) -> None:
+        self.__token = token if token else settings.BOT_TOKEN
+        self.__base_url = f"https://api.telegram.org/bot{self.__token}/"
 
-    def get_url(self, method: str):
-        return f"https://api.telegram.org/bot{self.token}/{method}"
+    def get_updates(self, offset: int = 0, timeout: int = 60) -> GetUpdatesSchema:
+        data = self._get('getUpdates', offset=offset, timeout=timeout)
+        return GetUpdatesSchema(**data)
 
-    def get_updates(self, offset: int = 0, timeout: int = 60) -> GetUpdatesResponse:
-        response = requests.get(self.get_url(
-            f'getUpdates?offset={offset}&timeout={timeout}&'
-            f'allowed_updates=["update_id","message"]'
-        ))
-        print(response.json())
+    def send_message(self, chat_id: int, text: str) -> SendMessageSchema:
+        data = self._get('sendMessage', chat_id=chat_id, text=text)
+        return SendMessageSchema(**data)
 
-        offset = 0
-        tg_client = TgClient("token")
-        while True:
-            res = tg_client.get_updates(offset=offset)
-            for item in res.result:
-                offset = item.update_id + 1
-                print(item.message)
+    def __get_url(self, method: str) -> str:
+        return f"{self.__base_url}{method}"
 
-    def send_message(self, chat_id: int, text: str) -> SendMessageResponse:
-        raise NotImplementedError
+    def _get(self, command: str, **params: Any) -> dict:
+        url = self.__get_url(command)
+        response = requests.get(url, params=params)
+        if not response.ok:
+            print(f'Invalid status code from telegram '
+                  f'{response.status_code} on command {command}')
+        return response.json()
 
-    def from_message(self, chat_id: int, text: str) -> FromMessageResponse:
-        raise NotImplementedError
 
-    def get_chat(self, chat_id: int) -> ChatResponse:
-        raise NotImplementedError
+def _serialize_response(serializer_class, data):
+    try:
+        return serializer_class(**data)
+    except ValidationError as e:
+        print(f'Failed to serializer telegram response due {e}')
+        raise ValueError
