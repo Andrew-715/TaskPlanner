@@ -37,7 +37,7 @@ class Command(BaseCommand):
     def handle_message(self, msg: Message):
         self.tg_client.send_message(chat_id=msg.chat.id, text=msg.text)
         tg_user, _ = TgUser.objects.get_or_create(
-            chat_id=msg.chat.id, defaults={'username': msg.chat.username})
+            telegram_chat_id=msg.chat.id)
 
         if tg_user.is_verified:
             self.handle_authorized_user(tg_user, msg)
@@ -61,15 +61,14 @@ class Command(BaseCommand):
             client.next_handler(tg_user=tg_user, msg=msg, **client.data)
 
     def handle_unauthorized_user(self, tg_user: TgUser, msg: Message):
-        chat_id = tg_user.telegram_chat_id
-        self.tg_client.send_message(chat_id, 'Hello, friend!')
+        self.tg_client.send_message(tg_user.telegram_chat_id, 'Hello, friend!')
         tg_user.update_verification_code()
-        self.tg_client.send_message(chat_id,
+        self.tg_client.send_message(tg_user.telegram_chat_id,
                                     f'Your verification code: {tg_user.verification_code}')
 
     def handle_goals_command(self, tg_user: TgUser, msg: Message):
         goals = Goal.objects.exclude(status=Goal.Status.archived).filter(
-            user=tg_user.telegram_user_id)
+            user=tg_user.user)
         if goals:
             text = 'Your goals:\n' + '\n'.join([f'{goal.id} {goal.title}' for goal in goals])
         else:
@@ -79,7 +78,7 @@ class Command(BaseCommand):
 
     def handle_create_command(self, tg_user: TgUser, msg: Message):
         categories = GoalCategory.objects.filter(
-            user=tg_user.telegram_user_id).exclude(is_deleted=True)
+            user=tg_user.user).exclude(is_deleted=True)
         if not categories:
             self.tg_client.send_message(
                 tg_user.telegram_chat_id, 'You have not categories')
@@ -104,6 +103,6 @@ class Command(BaseCommand):
     def _create_goal(self, tg_user: TgUser, msg: Message, **kwargs):
         category = kwargs['category']
         Goal.objects.create(
-            category=category, user=tg_user.telegram_user_id, title=msg.text)
+            category=category, user=tg_user.user, title=msg.text)
         self.tg_client.send_message(tg_user.telegram_chat_id, 'New goal create')
         self.clients.pop(tg_user.telegram_chat_id, None)

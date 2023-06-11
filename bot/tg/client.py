@@ -4,7 +4,7 @@ import requests
 from marshmallow import ValidationError
 
 from TaskPlanner import settings
-from bot.tg.dc import GetUpdatesResponse, SendMessageResponse, GetUpdatesSchema, SendMessageSchema
+from bot.tg.dc import GetUpdatesResponse, SendMessageResponse
 
 
 class TgClient:
@@ -12,13 +12,15 @@ class TgClient:
         self.__token = token if token else settings.BOT_TOKEN
         self.__base_url = f"https://api.telegram.org/bot{self.__token}/"
 
-    def get_updates(self, offset: int = 0, timeout: int = 60) -> GetUpdatesSchema:
+    def get_updates(self, offset: int = 0, timeout: int = 60) -> GetUpdatesResponse:
         data = self._get('getUpdates', offset=offset, timeout=timeout)
-        return GetUpdatesSchema(**data)
+        print(data)
+        return GetUpdatesResponse.Schema().load(data)
 
-    def send_message(self, chat_id: int, text: str) -> SendMessageSchema:
+    def send_message(self, chat_id: int, text: str) -> SendMessageResponse:
         data = self._get('sendMessage', chat_id=chat_id, text=text)
-        return SendMessageSchema(**data)
+        print(data)
+        return SendMessageResponse.Schema().load(data)
 
     def __get_url(self, method: str) -> str:
         return f"{self.__base_url}{method}"
@@ -29,6 +31,7 @@ class TgClient:
         if not response.ok:
             print(f'Invalid status code from telegram '
                   f'{response.status_code} on command {command}')
+            print(response.text)
         return response.json()
 
 

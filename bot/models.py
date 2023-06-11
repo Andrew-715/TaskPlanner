@@ -12,7 +12,7 @@ class TgUser(Model):
         editable=False,
         unique=True
     )
-    telegram_user_id = OneToOneField(
+    user = OneToOneField(
         to=USER,
         on_delete=CASCADE,
         null=True,
@@ -33,7 +33,7 @@ class TgUser(Model):
 
     @property
     def is_verified(self) -> bool:
-        return bool(self.telegram_user_id)
+        return bool(self.user)
 
     @staticmethod
     def _generate_verification_code() -> str:
