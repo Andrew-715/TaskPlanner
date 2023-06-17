@@ -43,7 +43,7 @@ class Command(BaseCommand):
         else:
             self.handle_unauthorized_user(tg_user, msg)
 
-    def handle_authorized_user(self, tg_user: TgUser, msg: Message):
+    def handle_authorized_user(self, tg_user: TgUser, msg: Message) -> None:
         self.tg_client.send_message(tg_user.telegram_chat_id, 'You authorized!')
         if msg.text.startswith('/'):
             if msg.text == '/goals':
@@ -59,13 +59,13 @@ class Command(BaseCommand):
             client = self.clients[tg_user.telegram_chat_id]
             client.next_handler(tg_user=tg_user, msg=msg, **client.data)
 
-    def handle_unauthorized_user(self, tg_user: TgUser, msg: Message):
+    def handle_unauthorized_user(self, tg_user: TgUser, msg: Message) -> None:
         self.tg_client.send_message(tg_user.telegram_chat_id, 'Hello, friend!')
         tg_user.update_verification_code()
         self.tg_client.send_message(tg_user.telegram_chat_id,
                                     f'Your verification code: {tg_user.verification_code}')
 
-    def handle_goals_command(self, tg_user: TgUser, msg: Message):
+    def handle_goals_command(self, tg_user: TgUser, msg: Message) -> None:
         goals = Goal.objects.exclude(status=Goal.Status.archived).filter(
             user=tg_user.user)
         if goals:
@@ -75,7 +75,7 @@ class Command(BaseCommand):
 
         self.tg_client.send_message(tg_user.telegram_chat_id, text)
 
-    def handle_create_command(self, tg_user: TgUser, msg: Message):
+    def handle_create_command(self, tg_user: TgUser, msg: Message) -> None:
         categories = GoalCategory.objects.filter(
             user=tg_user.user).exclude(is_deleted=True)
         if not categories:
@@ -88,7 +88,7 @@ class Command(BaseCommand):
         self.tg_client.send_message(tg_user.telegram_chat_id, text)
         self.clients[tg_user.telegram_chat_id] = FSMData(next_handler=self._get_category)
 
-    def _get_category(self, tg_user: TgUser, msg: Message, **kwargs):
+    def _get_category(self, tg_user: TgUser, msg: Message, **kwargs) -> None:
         try:
             category = GoalCategory.objects.get(pk=msg.text)
         except GoalCategory.DoesNotExist:
@@ -99,7 +99,7 @@ class Command(BaseCommand):
             self.clients[tg_user.telegram_chat_id].data['category'] = category
             self.tg_client.send_message(tg_user.telegram_chat_id, 'Set goal title')
 
-    def _create_goal(self, tg_user: TgUser, msg: Message, **kwargs):
+    def _create_goal(self, tg_user: TgUser, msg: Message, **kwargs) -> None:
         category = kwargs['category']
         Goal.objects.create(
             category=category, user=tg_user.user, title=msg.text)

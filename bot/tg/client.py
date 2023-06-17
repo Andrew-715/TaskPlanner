@@ -32,7 +32,7 @@ class TgClient:
         return response.json()
 
 
-def _serialize_response(serializer_class, data):
+def _serialize_response(serializer_class: Any, data: Any) -> Any:
     try:
         return serializer_class(**data)
     except ValidationError as e:
