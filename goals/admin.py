@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
+from rest_framework.request import Request
 
 from goals.models import GoalCategory, GoalComment, Goal, BoardParticipant, Board
 
@@ -9,7 +10,7 @@ class ParticipantsInLine(admin.TabularInline):
     model = BoardParticipant
     extra = 0
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: Request) -> BoardParticipant:
         return super().get_queryset(request).exclude(role=BoardParticipant.Role.owner)
 
 
@@ -46,9 +47,8 @@ class GoalAdmin(admin.ModelAdmin):
     list_filter = ('status', 'priority')
     inlines = [CommentInLine]
 
-    '''
-    Отображение автора цели в админке.
-    '''
+    '''Отображение автора цели в админке.'''
+
     def author_link(self, obj: Goal) -> str:
         return format_html(
             "<a href='{url}'>{user_name}</a>",

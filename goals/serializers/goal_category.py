@@ -15,9 +15,9 @@ class GoalCreateSerializer(ModelSerializer):
             raise ValidationError('Board is deleted')
 
         if not BoardParticipant.objects.filter(
-            board_id=board.id,
-            role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
-            user_id=self.context['request'].user
+                board_id=board.id,
+                role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
+                user_id=self.context['request'].user
         ).exists():
             raise PermissionDenied
 

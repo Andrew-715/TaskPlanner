@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, \
     UpdateAPIView
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.serializers import RegistrationSerializer, LoginSerializer, \
@@ -24,7 +25,7 @@ class LoginView(CreateAPIView):
     авторизуем пользователя.
     '''
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs) -> Response:
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -39,7 +40,7 @@ class ProfileView(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         return self.request.user
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request: Request, *args, **kwargs) -> Response:
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 

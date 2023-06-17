@@ -2,12 +2,7 @@ from django_filters.rest_framework import FilterSet
 
 from goals.models import Goal
 
-'''
-Фильтрация по:
-категории/категориям,
-приоритету/приоритетам,
-дате дедлайна(от/до).
-'''
+'''Фильтрация по: дате дедлайна(от/до), категории, статусу, приоритету.'''
 
 
 class GoalFilter(FilterSet):

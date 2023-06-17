@@ -32,7 +32,7 @@ class BoardListView(ListAPIView):
     filterset_class = GoalFilter
     ordering = ['title']
 
-    def get_queryset(self) -> QuerySet(Board):
+    def get_queryset(self) -> QuerySet[Board]:
         return Board.objects.filter(
             participants__user=self.request.user).exclude(is_deleted=True)
 
