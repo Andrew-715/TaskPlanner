@@ -36,6 +36,7 @@ jobs:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
           SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
           mkdir deploy_ci
           cat docker-compose-ci.yaml | envsubst > deploy_ci/docker-compose.yaml

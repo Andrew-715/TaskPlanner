@@ -35,7 +35,6 @@ class Command(BaseCommand):
                 self.handle_message(item.message)
 
     def handle_message(self, msg: Message):
-        self.tg_client.send_message(chat_id=msg.chat.id, text=msg.text)
         tg_user, _ = TgUser.objects.get_or_create(
             telegram_chat_id=msg.chat.id)
 

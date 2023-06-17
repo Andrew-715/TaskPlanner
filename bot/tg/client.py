@@ -14,12 +14,10 @@ class TgClient:
 
     def get_updates(self, offset: int = 0, timeout: int = 60) -> GetUpdatesResponse:
         data = self._get('getUpdates', offset=offset, timeout=timeout)
-        print(data)
         return GetUpdatesResponse.Schema().load(data)
 
     def send_message(self, chat_id: int, text: str) -> SendMessageResponse:
         data = self._get('sendMessage', chat_id=chat_id, text=text)
-        print(data)
         return SendMessageResponse.Schema().load(data)
 
     def __get_url(self, method: str) -> str:
@@ -31,7 +29,6 @@ class TgClient:
         if not response.ok:
             print(f'Invalid status code from telegram '
                   f'{response.status_code} on command {command}')
-            print(response.text)
         return response.json()
 
 
