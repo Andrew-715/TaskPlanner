@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   front:
-    image: sermalenk/skypro-front:lesson-37
+    image: sermalenk/skypro-front:lesson-38
     restart: always
     ports:
       - 81:80
@@ -41,6 +41,20 @@ services:
     env_file: .env
     command: >
       sh -c "python ./manage.py migrate"
+
+  bot:
+    build:
+      context: .
+    env_file: .env
+    environment:
+      DATABASE_HOST: db
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    command:
+      python ./manage.py runbot
 
   db:
     image: postgres:15.1-alpine

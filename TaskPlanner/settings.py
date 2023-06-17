@@ -29,6 +29,8 @@ DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = ['*']
 
+BOT_TOKEN = env.str('BOT_TOKEN')
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     "core",
     "social_django",
     "goals",
+    "bot",
 ]
 
 MIDDLEWARE = [
