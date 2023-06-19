@@ -19,7 +19,7 @@ class GoalSerializer(ModelSerializer):
     принадлежит пользователю.
     '''
 
-    def validate_goal(self, value: GoalCategory) -> GoalCategory:
+    def validate_category(self, value: GoalCategory) -> GoalCategory:
         if value.is_deleted:
             raise ValidationError("not allowed in deleted category")
 
@@ -28,7 +28,7 @@ class GoalSerializer(ModelSerializer):
                 role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
                 user_id=self.context['request'].user
         ).exists():
-            raise PermissionDenied
+            raise PermissionDenied('must be owner or writer in project')
 
         return value
 
