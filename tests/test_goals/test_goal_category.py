@@ -44,12 +44,12 @@ class TestCreateGoalCategoryView:
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_successful_to_create_category_by_owner(self, auth_client, board_participant, goal_category):
-        board_participant.role = BoardParticipant.Role.owner
-        board_participant.save(update_fields=['role'])
-        data = CreateGoalCategoryRequest.create(category=goal_category.id)
+    def test_successful_to_create_category_by_owner(self, board, another_user, client):
+        BoardParticipant.objects.create(board=board, user=another_user, role=BoardParticipant.Role.owner)
+        client.force_login(another_user)
+        data = CreateGoalCategoryRequest(board=board.id)
 
-        response = auth_client.post(self.url, data=data)
+        response = client.post(self.url, data=data)
 
         assert response.status_code == status.HTTP_201_CREATED
         new_category = GoalCategory.objects.get()
