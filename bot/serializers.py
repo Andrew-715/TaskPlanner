@@ -6,8 +6,8 @@ from bot.models import TgUser
 
 
 class TgUserSerializer(ModelSerializer):
-    tg_id = IntegerField(source='chat_id', read_only=True)
-    user_id = IntegerField(source='user.id', read_only=True)
+    tg_id = IntegerField(source='telegram_chat_id', read_only=True)
+    user_id = IntegerField(read_only=True)
     verification_code = CharField(write_only=True)
 
     def validate_verification_code(self, code: str) -> str:
