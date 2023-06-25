@@ -1,10 +1,11 @@
+from typing import Any
+
 import pytest
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.fields import DateTimeField
 
 from goals.models import BoardParticipant, GoalComment
-from tests.test_goals.factories import CreateGoalCommentRequest
 
 
 @pytest.mark.django_db()
@@ -29,7 +30,7 @@ class TestRetrieveGoalComment:
 
         response = auth_client.get(self.url)
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_get_another_user_comment(self, auth_client, another_user, goal_comment_factory, goal):
         comment = goal_comment_factory.create(goal=goal, user=another_user)
@@ -40,8 +41,8 @@ class TestRetrieveGoalComment:
         assert response.json() == _serialize_response(comment, with_user=True)
 
 
-def _serialize_response(goal_comment: GoalComment, **kwargs) -> dict:
-    data = {
+def _serialize_response(goal_comment: GoalComment, with_user: bool = False, **kwargs) -> dict:
+    data: dict[str, Any] = {
         'id': goal_comment.id,
         'user': goal_comment.user.id,
         'created': DateTimeField().to_representation(goal_comment.created),
@@ -49,5 +50,13 @@ def _serialize_response(goal_comment: GoalComment, **kwargs) -> dict:
         'text': goal_comment.text,
         'goal': goal_comment.goal.id
     }
+    if with_user:
+        data['user'] ={
+            'id': goal_comment.user.id,
+            'username': goal_comment.user.username,
+            'first_name': goal_comment.user.first_name,
+            'last_name': goal_comment.user.last_name,
+            'email': goal_comment.user.email
+        }
 
     return data | kwargs

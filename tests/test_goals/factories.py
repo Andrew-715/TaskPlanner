@@ -16,5 +16,5 @@ class CreateGoalRequest(factory.DictFactory):
         instance.save(update_fields=['status'])
 
 
-class CreateGoalCommentRequest(factory.DictFactory):
-    text = factory.Faker('sentence')
+# class CreateGoalCommentRequest(factory.DictFactory):
+#     text = factory.Faker('sentence')

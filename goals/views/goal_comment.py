@@ -33,7 +33,7 @@ class GoalCommentListView(ListAPIView):
 
 class GoalCommentView(RetrieveUpdateDestroyAPIView):
     permission_classes = [GoalCommentPermission]
-    serializer_class = CommentSerializer
+    serializer_class = GoalCommentSerializer
 
     def get_queryset(self) -> QuerySet[GoalComment]:
         return GoalComment.objects.select_related('user').filter(

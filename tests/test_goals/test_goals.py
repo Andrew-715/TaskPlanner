@@ -79,7 +79,7 @@ def _serialize_response(goal: Goal, **kwargs) -> dict:
         'updated': DateTimeField().to_representation(goal.updated),
         'title': goal.title,
         'description': goal.description,
-        'due-date': DateTimeField().to_representation(goal.due_date),
+        'due_date': DateTimeField().to_representation(goal.due_date),
         'status': goal.status,
         'priority': goal.priority
     }
