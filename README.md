@@ -6,7 +6,7 @@ ____
 - **Django**
 - **Postgres SQL**
 - **Docker**
-- **HTML, TypeScript, SCSS [образ для фронта был взят [отсюда](https://github.com/skypro-008/todo-list-frontend)**
+- **HTML, TypeScript, SCSS (образ для фронта был взят [отсюда](https://github.com/skypro-008/todo-list-frontend))**
 - **[Telegram-bot](https://t.me/TDListHelper_bot)**
 ____
 ### Подготовка и запуск приложения:
