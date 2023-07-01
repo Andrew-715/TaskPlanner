@@ -59,7 +59,7 @@ jobs:
           script: |
             cd TaskPlanner
             docker-compose down
-            docker-compose pull
+            docker-compose pul
             docker-compose up -d
       - name: Clear after deploy
         if: always()
