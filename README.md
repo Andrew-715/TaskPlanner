@@ -1,4 +1,4 @@
-# Task Planner (Планировщик задач)
+# Task Planner (backend)
 ## Приложение для планирования любых задач. Удобное в обращении и максимально практичное.
 ____
 ### Cтек приложения:
@@ -6,6 +6,7 @@ ____
 - **Django**
 - **Postgres SQL**
 - **Docker**
+- **HTML, TypeScript, SCSS [образ для фронта был взят[отсюда](https://github.com/skypro-008/todo-list-frontend))**
 - **[Telegram-bot](https://t.me/TDListHelper_bot)**
 ____
 ### Подготовка и запуск приложения:
